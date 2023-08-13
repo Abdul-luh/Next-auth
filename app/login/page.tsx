@@ -1,27 +1,84 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 import axios from "axios";
 
 const Login = () => {
 	const [user, setUser] = useState({
-		username: "",
 		email: "",
 		password: "",
 	});
 
-	const handleLogin = async () => {};
+	const [loading, setLoading] = useState(false);
+	const [buttonDisabled, setButtonDisabled] = useState(true);
+	const router = useRouter();
+
+	const handleLogin = async (e: any) => {
+		e.preventDefault();
+		// const res = await fetch("/api/users/login", {
+		// 	cache: "force-cache",
+		// 	method: "POST",
+		// 	headers: {
+		// 		"Content-Type": "application/json",
+		// 	},
+		// 	body: JSON.stringify(user),
+		// });
+		// const data = await res.json();
+
+		try {
+			const res = await axios
+				.post("/api/users/login", user)
+				.then((resp) => {
+					console.log(resp);
+				})
+				.catch((error) => {
+					error: console.log(error.response.data);
+				});
+			console.log(res);
+
+			// if (res.ok) {
+			// 	console.log(await res.json());
+			// 	console.log("Login successful");
+			// 	toast.success("Login successful");
+			// 	router.push("/profile");
+			// }
+			// if (data.error) {
+			// 	alert(data.error);
+			// }
+			setLoading(true);
+			router.push("/profile");
+		} catch (error: any) {
+			console.log(error.response.data);
+			// error ? console.log("Signup failed", error.message) : null;
+			toast.error(error.message);
+		} finally {
+			setLoading(false);
+			toast.success("please try again");
+		}
+	};
+
+	useEffect(() => {
+		if (user.email.length > 0 && user.password.length >= 4) {
+			setButtonDisabled(false);
+		} else {
+			setButtonDisabled(true);
+		}
+	}, [user]);
 
 	return (
 		<div className="flex w-screen h-screen flex-col text-center justify-center items-center dark:bg-gradient-to-br from-slate-800 to-zinc-500">
 			<form
 				onSubmit={handleLogin}
 				className="backdrop-blur-xl p-6 rounded-xl bg-white/10 flex flex-col z-10 gap-4">
-				<h1 className="text-4xl capitalize">Login</h1>
+				<h1 className="text-4xl capitalize">
+					{loading ? "Processing..." : "Login"}
+				</h1>
+
 				<div>
 					<label className="hidden" htmlFor="email">
-						email
+						Email
 					</label>
 					<input
 						className="p-2 border-gray-400 border-b  bg-transparent outline-none hover:border-white focus:border-white"
@@ -43,9 +100,12 @@ const Login = () => {
 					</label>
 					<input
 						className="p-2 border-gray-400 border-b  bg-transparent outline-none hover:border-white focus:border-white"
-						type="text"
+						type="password"
 						name="passowrd"
 						id="passowrd"
+						// autocomplete="current-password"
+						// pattern="[a-z0-9]{1,15}"
+						// title="Password should be digits (0 to 9) or alphabets (a to z)."
 						value={user.password}
 						placeholder="input your passowrd"
 						onChange={(e) => {
@@ -57,25 +117,22 @@ const Login = () => {
 
 				<div>
 					<input
-						className="border border-white hover:bg-white hover:text-zinc-800 rounded-xl py-2 px-4"
+						className="border disabled:opacity-50 border-white disabled:hover:text-inherit  disabled:hover:bg-transparent hover:bg-white hover:text-zinc-800 rounded-xl py-2 px-4"
 						type="submit"
-						value={"submit"}
+						disabled={buttonDisabled}
+						value={buttonDisabled ? "disabled" : "submit"}
 					/>
 				</div>
 
 				<div>
 					<p>
-						Have an account{" "}
+						Don`t have an account{" "}
 						<Link href={"/signup"}>
-							<span className="underlined">signup</span>
+							<span className="underlined">Signup</span>
 						</Link>
 					</p>
 				</div>
 			</form>
-
-			<div className="w-24 h-24 rounded-full absolute top-[45%] left-[20%] bg-orange-200"></div>
-
-			<div className="w-24 h-24 rounded-full absolute top-[35%] left-[60%] border-spacing-5 border-green-200"></div>
 		</div>
 	);
 };

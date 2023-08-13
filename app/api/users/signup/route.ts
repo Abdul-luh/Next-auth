@@ -6,9 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 dbConnect();
 
-
 export async function POST(req: NextRequest) {
-
 	try {
 		const reqBody = await req.json();
 		const { username, email, password } = reqBody;
@@ -28,6 +26,7 @@ export async function POST(req: NextRequest) {
 		const user = await User.findOne({ email });
 
 		if (user) {
+			console.log({ error: "User already exists" });
 			return NextResponse.json({ error: "User already exists" });
 		}
 

@@ -12,22 +12,41 @@ const Signup = () => {
 		password: "",
 	});
 
-	const [loading, setLoading] =useState(false)
+	const [loading, setLoading] = useState(false);
 	const [buttonDisabled, setButtonDisabled] = useState(true);
 	const router = useRouter();
 
-	const handleSignUp = async () => {
+	const handleSignUp = async (e: any) => {
+		e.preventDefault();
 		try {
-			setLoading(true)
-			const res = await axios.post("/api/users/signup", user);
-			console.log("Signup successful", res.data);
-			router.push("/login");
+			setLoading(true);
+			const res = await fetch("/api/users/signup", {
+				cache: "force-cache",
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(user),
+			});
+			const data = await res.json();
+
+			if (res.ok) {
+				console.log(data);
+				toast.success("Signup successful");
+				router.push("/login");
+				alert("Signup successful");
+				return console.log("Signup successful");
+			}
+			if (data.error) {
+				alert(data.error);
+			}
 		} catch (error: any) {
 			console.log("Signup failed", error.message);
-			
+
 			toast.error(error.message);
 		} finally {
-			setLoading(false)
+			setLoading(false);
+			toast.success("please try again");
 		}
 	};
 
@@ -48,7 +67,9 @@ const Signup = () => {
 			<form
 				onSubmit={handleSignUp}
 				className="backdrop-blur-xl p-6 rounded-xl bg-white/10 flex flex-col z-10 gap-4">
-				<h1 className="text-4xl capitalize">{loading ? "Processing..." : "Signup"}</h1>
+				<h1 className="text-4xl capitalize">
+					{loading ? "Processing..." : "Signup"}
+				</h1>
 				<div>
 					<label className="hidden" htmlFor="username">
 						Username
@@ -108,7 +129,7 @@ const Signup = () => {
 						className="border disabled:opacity-50 border-white disabled:hover:text-inherit  disabled:hover:bg-transparent hover:bg-white hover:text-zinc-800 rounded-xl py-2 px-4"
 						type="submit"
 						disabled={buttonDisabled}
-						value={buttonDisabled?"diabled":"submit"}
+						value={buttonDisabled ? "disabled" : "submit"}
 					/>
 				</div>
 
