@@ -35,7 +35,9 @@ const Login = () => {
 				})
 				.catch((error) => {
 					error: console.log(error.response.data);
-				});
+					toast.error(error.response.data);
+				})
+				.finally();
 			console.log(res);
 
 			// if (res.ok) {
@@ -52,7 +54,6 @@ const Login = () => {
 		} catch (error: any) {
 			console.log(error.response.data);
 			// error ? console.log("Signup failed", error.message) : null;
-			toast.error(error.message);
 		} finally {
 			setLoading(false);
 			toast.success("please try again");
