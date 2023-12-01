@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
@@ -16,7 +16,7 @@ const Signup = () => {
 	const [buttonDisabled, setButtonDisabled] = useState(true);
 	const router = useRouter();
 
-	const handleSignUp = async (e: any) => {
+	const handleSignUp = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		try {
 			setLoading(true);

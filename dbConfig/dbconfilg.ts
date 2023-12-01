@@ -16,8 +16,8 @@ export async function dbConnect() {
 			process.exit();
 		});
 	} catch (error) {
-		console.log("something went wrong from the database connection");
+		console.log("Please check Your internet connection");
 		console.log(error);
-		console.log("something went wrong from the database connection");
+		// console.log("something went wrong from the database connection");
 	}
 }

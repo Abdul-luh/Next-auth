@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
@@ -15,45 +15,40 @@ const Login = () => {
 	const [buttonDisabled, setButtonDisabled] = useState(true);
 	const router = useRouter();
 
-	const handleLogin = async (e: any) => {
+	const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		// const res = await fetch("/api/users/login", {
-		// 	cache: "force-cache",
-		// 	method: "POST",
-		// 	headers: {
-		// 		"Content-Type": "application/json",
-		// 	},
-		// 	body: JSON.stringify(user),
-		// });
-		// const data = await res.json();
 
 		try {
-			const res = await axios
-				.post("/api/users/login", user)
-				.then((resp) => {
-					console.log(resp);
-				})
-				.catch((error) => {
-					error: console.log(error.response.data);
-					toast.error(error.response.data);
-				})
-				.finally();
+			setLoading(true);
+			const res = await fetch("/api/users/login", {
+				cache: "force-cache",
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(user),
+			});
+
+			const data = await res.json();
 			console.log(res);
 
-			// if (res.ok) {
-			// 	console.log(await res.json());
-			// 	console.log("Login successful");
-			// 	toast.success("Login successful");
-			// 	router.push("/profile");
-			// }
-			// if (data.error) {
-			// 	alert(data.error);
-			// }
+			console.log(res);
+
+			if (res.ok) {
+				console.log(data);
+				console.log("Login successful");
+				toast.success("Login successful");
+				router.push("/profile");
+			}
+			if (data.error) {
+				alert(data.error);
+			}
+
 			setLoading(true);
 			router.push("/profile");
 		} catch (error: any) {
-			console.log(error.response.data);
-			// error ? console.log("Signup failed", error.message) : null;
+			console.log(error.response);
+			error ? console.log("Signup failed:", error.message) : null;
 		} finally {
 			setLoading(false);
 			toast.success("please try again");
@@ -105,8 +100,8 @@ const Login = () => {
 						name="passowrd"
 						id="passowrd"
 						// autocomplete="current-password"
-						// pattern="[a-z0-9]{1,15}"
-						// title="Password should be digits (0 to 9) or alphabets (a to z)."
+						pattern="[a-z0-9]{1,15}"
+						title="Password should be digits (0 to 9) or alphabets (a to z)."
 						value={user.password}
 						placeholder="input your passowrd"
 						onChange={(e) => {
